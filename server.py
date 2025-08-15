@@ -32,9 +32,11 @@ def generate_upload_url():
         bucket = storage_client.bucket(BUCKET_NAME)
         blob = bucket.blob(object_name)
 
-        url = blob.generate_v4_put_object_presigned_url(
+        # --- THIS IS THE CORRECTED FUNCTION ---
+        url = blob.generate_signed_url(
             version="v4",
             expiration=datetime.timedelta(minutes=15),
+            method="PUT",
             content_type=data.get('contentType', 'application/octet-stream')
         )
         
