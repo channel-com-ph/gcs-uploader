@@ -8,6 +8,11 @@ from flask_cors import CORS # Import CORS
 app = Flask(__name__)
 CORS(app) # Enable CORS for all routes
 
+@app.route('/')
+def health_check():
+    """A simple route to check if the server is running."""
+    return "Health check OK: Service is running.", 200
+
 # --- Configuration ---
 # Get this from your GCS bucket page
 BUCKET_NAME = "channelcomph_quotation" 
