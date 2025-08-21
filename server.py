@@ -32,7 +32,6 @@ def generate_upload_url():
         bucket = storage_client.bucket(BUCKET_NAME)
         blob = bucket.blob(object_name)
 
-        # --- THIS IS THE CORRECTED FUNCTION ---
         url = blob.generate_signed_url(
             version="v4",
             expiration=datetime.timedelta(minutes=15),
@@ -46,6 +45,34 @@ def generate_upload_url():
         print("!!! AN EXCEPTION OCCURRED !!!")
         traceback.print_exc()
         return jsonify({"error": f"Server exception: {str(e)}"}), 500
+
+# --- NEW ENDPOINT FOR SECURE DOWNLOADS ---
+# This is the new function you are adding.
+@app.route('/generate-download-url', methods=['POST'])
+def generate_download_url():
+    """Generates a signed URL for reading a private GCS object."""
+    json_data = request.get_json()
+    if not json_data or 'objectName' not in json_data:
+        return jsonify({'error': 'Missing objectName'}), 400
+
+    object_name = json_data['objectName']
+    bucket = storage_client.bucket(BUCKET_NAME)
+    blob = bucket.blob(object_name)
+
+    try:
+        # The expiration time for the URL
+        expiration_time = datetime.timedelta(days=7)
+
+        # Generate the signed URL for a GET request (read)
+        url = blob.generate_signed_url(
+            version="v4",
+            expiration=expiration_time,
+            method="GET",
+        )
+        return jsonify({'url': url}), 200
+    except Exception as e:
+        return jsonify({'error': f'Failed to generate download URL: {str(e)}'}), 500
+# --- END OF NEW ENDPOINT ---
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
