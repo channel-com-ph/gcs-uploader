@@ -15,7 +15,7 @@ def health_check():
     return "Health check OK: Final version is running.", 200
 
 # --- Configuration ---
-BUCKET_NAME = "channelcomph_quotation1"
+BUCKET_NAME = "channelcomph_quotation-1"
 storage_client = storage.Client()
 
 @app.route('/generate-upload-url', methods=['POST'])
